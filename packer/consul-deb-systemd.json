@@ -1,0 +1,107 @@
+{
+	"variables": {
+		"aws_access_key_id": "{{ env `AWS_ACCESS_KEY_ID` }}",
+		"aws_secret_access_key": "{{ env `AWS_SECRET_ACCESS_KEY` }}",
+		"region": "{{ env `AWS_REGION` }}",
+		"vpc_id": "{{ env `PACKER_VPC_ID` }}",
+		"subnet_id": "{{ env `PACKER_SUBNET_ID` }}",
+		"environment": "{{ env `PACKER_ENVIRONMENT` }}"
+	},
+	"builders": [{
+		"type": "amazon-ebs",
+		"access_key": "{{ user `aws_access_key_id` }}",
+		"secret_key": "{{ user `aws_secret_access_key` }}",
+		"region": "{{user `region`}}",
+		"spot_price_auto_product": "Linux/UNIX (Amazon VPC)",
+
+		"ssh_pty": true,
+		"instance_type": "t2.medium",
+		"vpc_id": "{{user `vpc_id` }}",
+		"subnet_id": "{{user `subnet_id` }}",
+		"associate_public_ip_address": true,
+
+		"source_ami_filter": {
+			"most_recent": true,
+			"owners": ["self"],
+			"filters": {
+				"tag:System": "Terraform Enterprise",
+				"tag:Component": "BaseAMI",
+				"tag:OS": "Ubuntu-16.04"
+			}
+		},
+
+		"ssh_username": "hashicorp",
+		"ssh_timeout": "5m",
+
+		"launch_block_device_mappings": [
+			{
+				"device_name": "/dev/xvdf",
+				"delete_on_termination": true,
+				"volume_size": 100,
+				"volume_type": "gp2"
+			},
+			{
+				"device_name": "/dev/xvdg",
+				"delete_on_termination": true,
+				"volume_size": 100,
+				"volume_type": "gp2"
+			}
+		],
+
+		"ami_virtualization_type": "hvm",
+		"ami_description": "Consul - {{user `environment`}} -  ({{isotime \"2006-01-02-1504\"}})",
+		"ami_name": "tfe-consul-server-{{isotime \"2006-01-02-1504\"}}",
+		"snapshot_tags": {
+			"Name": "{{user `environment`}} Consul Server"
+		},
+		"tags": {
+			"Name": "{{user `environment`}} Consul Server",
+			"System": "Terraform Enterprise",
+			"Component": "ConsulServer",
+			"OS": "Ubuntu-16.04"
+		}
+	}],
+	"provisioners": [
+		{
+			"type": "shell",
+			"start_retry_timeout": "10m",
+			"inline": [
+				"sudo parted /dev/xvdf --script mklabel GPT",
+				"sudo parted /dev/xvdg --script mklabel GPT",
+				"sudo zpool create -m none data xvdf xvdg",
+				"sudo zfs create -o mountpoint=/srv/consul data/consul",
+				"sudo zfs list"
+			]
+		},
+		{
+			"type": "shell",
+			"start_retry_timeout": "10m",
+			"inline": [
+				"sudo mkdir -p /secrets",
+				"echo 'tmpfs   /secrets         tmpfs   nodev,nosuid,noexec,size=8M      0  0' | sudo tee -a /etc/fstab",
+				"sudo mount -a"
+			]
+		},
+		{
+			"type": "shell",
+			"start_retry_timeout": "10m",
+			"inline": [
+				"DEBIAN_FRONTEND=noninteractive sudo apt-get update",
+				"DEBIAN_FRONTEND=noninteractive sudo apt-get install -y consul-server-aws-ec2",
+				"sudo systemctl enable consul.service",
+				"sudo systemctl enable consul-online.service",
+				"sudo systemctl enable consul-online.target",
+				"sudo systemctl enable force-leave-missing-consul-peers.service"
+			]
+		},
+		{
+			"type": "shell",
+			"start_retry_timeout": "5m",
+			"inline": [
+				"sudo rm -rf /var/lib/cloud/instances/*",
+				"sudo rm -f /root/.ssh/authorized_keys",
+				"sudo rm -f /home/hashicorp/.ssh/authorized_keys"
+			]
+		}
+	]
+}
