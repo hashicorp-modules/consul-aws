@@ -1,28 +1,7 @@
+##
+# INPUTS
+##
 variable "vpc_id" {
-	type = "string"
-}
-
-variable "vpc_zone_id" {
-	type = "string"
-}
-
-variable "tls_kms_arn" {
-	type = "string"
-}
-
-variable "tls_key_bucket_arn" {
-	type = "string"
-}
-
-variable "log_group_name" {
-	type = "string"
-}
-
-variable "consul_tld" {
-	type = "string"
-}
-
-variable "dns_name" {
 	type = "string"
 }
 
@@ -30,20 +9,12 @@ variable "subnets" {
 	type = "list"
 }
 
-variable "backup_bucket_name" {
-	type = "string"
-}
-
-variable "backup_bucket_arn" {
-	type = "string"
-}
-
 variable "cluster_size" {
-	type = "string"
+	default = "3"
 }
 
 variable "cluster_name" {
-	type = "string"
+	default = "consul"
 }
 
 variable "ami" {
@@ -51,25 +22,21 @@ variable "ami" {
 }
 
 variable "instance_type" {
-	type = "string"
+	default = "m4.large"
 }
 
-variable "consul_serf_key" {
-	type = "string"
-}
-
-variable "consul_circonus_token" {
-	type = "string"
-}
-
-variable "tls_key_bucket_name" {
-	type = "string"
-}
-
+##
+# OUTPUTS
+##
 output "asg_id" {
 	value = "${aws_autoscaling_group.consul_server.id}"
 }
 
-output "consul_client_sg_id" {
+output "consul_server_sg" {
+	value = "${aws_security_group.consul_server.id}"
+}
+
+output "consul_client_sg" {
 	value = "${aws_security_group.consul_client.id}"
 }
+
