@@ -1,65 +1,65 @@
 {
-	"variables": {
-		"aws_access_key_id": "{{ env `AWS_ACCESS_KEY_ID` }}",
-		"aws_secret_access_key": "{{ env `AWS_SECRET_ACCESS_KEY` }}",
-		"region": "{{ env `AWS_REGION` }}",
-		"environment": "{{ env `PACKER_ENVIRONMENT` }}",
+  "variables": {
+    "aws_access_key_id": "{{ env `AWS_ACCESS_KEY_ID` }}",
+    "aws_secret_access_key": "{{ env `AWS_SECRET_ACCESS_KEY` }}",
+    "region": "{{ env `AWS_REGION` }}",
+    "environment": "{{ env `PACKER_ENVIRONMENT` }}",
     "github_token": "{{ env `GITHUB_TOKEN` }}",
     "vcsname": "{{ env `VCSNAME` }}",
     "consul_version": "{{ env `CONSUL_VERSION` }}"
-	},
-	"builders": [{
-		"type": "amazon-ebs",
-		"access_key": "{{ user `aws_access_key_id` }}",
-		"secret_key": "{{ user `aws_secret_access_key` }}",
-		"region": "{{user `region`}}",
-		"spot_price_auto_product": "Linux/UNIX (Amazon VPC)",
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{ user `aws_access_key_id` }}",
+    "secret_key": "{{ user `aws_secret_access_key` }}",
+    "region": "{{user `region`}}",
+    "spot_price_auto_product": "Linux/UNIX (Amazon VPC)",
                 "ami_groups": "all",
-		"ssh_pty": true,
-		"instance_type": "t2.medium",
-		"associate_public_ip_address": true,
+    "ssh_pty": true,
+    "instance_type": "t2.medium",
+    "associate_public_ip_address": true,
 
-		"source_ami_filter": {
-			"filters": {
-				"virtualization-type": "hvm",
-				"name": "*RHEL-6.7_HVM_GA-*",
-				"root-device-type": "ebs"
-			},
-			"owners": ["309956199498"],
-			"most_recent": true
-		},
-		"ssh_username": "ec2-user",
-		"ssh_timeout": "5m",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "*RHEL-6.7_HVM_GA-*",
+        "root-device-type": "ebs"
+      },
+      "owners": ["309956199498"],
+      "most_recent": true
+    },
+    "ssh_username": "ec2-user",
+    "ssh_timeout": "5m",
 
-		"ami_virtualization_type": "hvm",
-		"ami_description": "Consul Server",
-		"ami_name": "se-consul-{{ user `consul_version` }}-RHEL6.7-{{isotime \"2006-01-02-1504\"}}",
-		"tags": {
-			"Name": "{{user `environment`}} Consul Server {{ user `consul_version` }}",
-			"System": "Consul OSS",
-			"Component": "Consul",
+    "ami_virtualization_type": "hvm",
+    "ami_description": "Consul Server",
+    "ami_name": "se-consul-{{ user `consul_version` }}-RHEL6.7-{{isotime \"2006-01-02-1504\"}}",
+    "tags": {
+      "Name": "{{user `environment`}} Consul Server {{ user `consul_version` }}",
+      "System": "Consul OSS",
+      "Component": "Consul",
       "Environment": "{{user `environment`}}",
       "Built-By": "{{user `vcsname`}}",
-			"OS": "RHEL-6.7"
-		}
-	}],
-	"provisioners": [
-	{
-		"type": "shell",
-		"start_retry_timeout": "10m",
-		"inline": [
+      "OS": "RHEL-6.7"
+    }
+  }],
+  "provisioners": [
+  {
+    "type": "shell",
+    "start_retry_timeout": "10m",
+    "inline": [
       "echo \"Prep Stage\"",
       "/usr/bin/sudo setenforce 0",
       "/usr/bin/sudo yum -y install redhat-lsb-core unzip wget curl",
-			"/usr/bin/sudo yum -y update nss openssl",
+      "/usr/bin/sudo yum -y update nss openssl",
       "/usr/bin/sudo sed -i 's/(^SELINUX=).*/SELINUX=disabled/' /etc/sysconfig/selinux",
       "/usr/bin/sudo curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /etc/init.d/consul https://raw.githubusercontent.com/hashicorp-scripts/consul/master/init/consul.sysvinit"
-		]
-	},
-	{
-		"type": "shell",
-		"start_retry_timeout": "10m",
-		"inline": [
+    ]
+  },
+  {
+    "type": "shell",
+    "start_retry_timeout": "10m",
+    "inline": [
       "echo \"Install Stage\"",
       "curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /tmp/consul_install https://raw.githubusercontent.com/hashicorp-scripts/consul/master/install-consul/shell/consul.sh",
       "/usr/bin/sudo chmod +x /etc/init.d/consul",
@@ -67,12 +67,12 @@
       "/usr/bin/sudo env VERSION=0.7.5 /tmp/consul_install",
       "/usr/bin/sudo curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /etc/consul.d/config.json https://raw.githubusercontent.com/hashicorp-scripts/consul/master/config/config.json",
       "/usr/bin/sudo service consul start"
-		]
-	},
-	{
-		"type": "shell",
-		"start_retry_timeout": "5m",
-		"inline": [
+    ]
+  },
+  {
+    "type": "shell",
+    "start_retry_timeout": "5m",
+    "inline": [
       "echo \"Cleanup Stage\"",
       "sudo rm -rf /var/lib/cloud/instances/*",
       "sudo rm -f /root/.ssh/authorized_keys",
@@ -80,7 +80,7 @@
       "sudo rm -f /tmp/consul",
       "sudo rm -f /home/ec2-user/.ssh/authorized_keys",
       "history -cw"
-		]
-	}
-	]
+    ]
+  }
+  ]
 }
