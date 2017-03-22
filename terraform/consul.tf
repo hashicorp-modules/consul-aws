@@ -1,7 +1,3 @@
-resource "aws_cloudwatch_log_group" "consul_server" {
-	name = "${var.log_group_name}"
-}
-
 resource "aws_iam_role" "consul_server" {
 	name = "ConsulServer"
 	assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
@@ -51,52 +47,5 @@ resource "aws_autoscaling_group" "consul_server" {
 		value = "${format("%s Consul Server", var.cluster_name)}"
 		propagate_at_launch = true
 	}
-	
-	tag {
-		key = "tfe:log_group"
-		value = "${var.log_group_name}"
-		propagate_at_launch = true
-	}
 
-	tag {
-		key = "tfe:consul:serf_key"
-		value = "${var.consul_serf_key}"
-		propagate_at_launch = true
-	}
-	
-	tag {
-		key = "tfe:consul:circonus_token"
-		value = "${var.consul_circonus_token}"
-		propagate_at_launch = true
-	}
-	
-	tag {
-		key = "tfe:consul:tls_kms_bucket"
-		value = "${var.tls_key_bucket_name}"
-		propagate_at_launch = true
-	}
-	
-	tag {
-		key = "tfe:consul:snapshot_bucket"
-		value = "${var.backup_bucket_name}"
-		propagate_at_launch = true
-	}
-
-	tag {
-		key = "tfe:consul:dns_name"
-		value = "${var.dns_name}"
-		propagate_at_launch = true
-	}
-	
-	tag {
-		key = "tfe:consul:tld"
-		value = "${var.consul_tld}"
-		propagate_at_launch = true
-	}
-	
-	tag {
-		key = "tfe:consul:hosted_zone_id"
-		value = "${var.vpc_zone_id}"
-		propagate_at_launch = true
-	}
 }

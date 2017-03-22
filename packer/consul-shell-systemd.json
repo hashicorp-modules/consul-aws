@@ -40,6 +40,7 @@
       "Component": "Consul",
       "Environment": "{{user `environment`}}",
       "Built-By": "{{user `vcsname`}}",
+
       "OS": "RHEL-7.3"
     }
   }],
