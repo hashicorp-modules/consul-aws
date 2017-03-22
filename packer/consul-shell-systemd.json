@@ -49,6 +49,7 @@
     "type": "shell",
     "start_retry_timeout": "10m",
     "inline": [
+      "echo \"Prep Stage\"",
       "/usr/bin/sudo /sbin/setenforce 0",
       "/usr/bin/sudo yum -y install redhat-lsb-core unzip wget",
       "/usr/bin/sudo sed -i 's/(^SELINUX=).*/SELINUX=disabled/' /etc/sysconfig/selinux",
@@ -59,6 +60,7 @@
     "type": "shell",
     "start_retry_timeout": "10m",
     "inline": [
+      "echo \"Install Stage\"",
       "curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /tmp/consul_install https://raw.githubusercontent.com/hashicorp-scripts/consul/master/install-consul/shell/consul.sh",
       "/usr/bin/sudo chmod +x /tmp/consul_install",
       "/usr/bin/sudo env VERSION=0.7.5 /tmp/consul_install",
@@ -70,6 +72,7 @@
     "type": "shell",
     "start_retry_timeout": "5m",
     "inline": [
+      "echo \"Cleanup Stage\"",
       "sudo rm -rf /var/lib/cloud/instances/*",
       "sudo rm -f /root/.ssh/authorized_keys",
       "sudo rm -f /tmp/generatecert",
