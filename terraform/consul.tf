@@ -40,6 +40,7 @@ resource "aws_launch_configuration" "consul_server" {
 	image_id = "${module.images-aws.consul_image}"
 	instance_type = "${var.instance_type}"
 	user_data = "${data.template_file.init.rendered}"
+  key_name  = "${var.sshkey}"
 	security_groups = [
 		"${aws_security_group.consul_server.id}",
 		"${aws_security_group.consul_client.id}"

@@ -17,6 +17,10 @@ variable "cluster_name" {
 	default = "consul"
 }
 
+variable "sshkey" {
+  description = "Name of the SSH key used to access system"
+}
+
 variable "OS" {
   default = "RHEL"
   description = "Operating System to use. So far only RHEL supported. Ubuntu will be supported soon"
