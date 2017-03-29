@@ -24,6 +24,7 @@ do
  fi
 done < /tmp/instances
 
+chown -R consul.consul /etc/consul.d/
 rm -f /tmp/instances
 
 # Clear any old state from the build process

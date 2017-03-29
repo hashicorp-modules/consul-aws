@@ -65,8 +65,9 @@
       "curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /tmp/consul_install https://raw.githubusercontent.com/hashicorp-scripts/consul/master/install-consul/shell/consul.sh",
       "/usr/bin/sudo chmod +x /etc/init.d/consul",
       "/usr/bin/sudo chmod +x /tmp/consul_install",
-      "/usr/bin/sudo env VERSION=0.7.5 /tmp/consul_install",
+      "/usr/bin/sudo env VERSION={{user `consul_version`}} /tmp/consul_install",
       "/usr/bin/sudo curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /etc/consul.d/config.json https://raw.githubusercontent.com/hashicorp-scripts/consul/master/config/config.json",
+      "/usr/bin/sudo chown -R consul.consul /etc/consul.d/config.json",
       "/usr/bin/sudo service consul start"
     ]
   },
