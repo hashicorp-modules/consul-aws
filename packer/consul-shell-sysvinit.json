@@ -40,7 +40,7 @@
       "Product": "Consul",
       "Environment": "{{user `environment`}}",
       "Built-By": "{{user `vcsname`}}",
-      "Product-Version": "{{user `vault_version`}}",
+      "Product-Version": "{{user `consul_version`}}",
       "OS": "RHEL",
       "OS-Version": "6.7"
     }
