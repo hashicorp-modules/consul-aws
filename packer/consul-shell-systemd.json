@@ -30,7 +30,6 @@
     },
     "ssh_username": "ec2-user",
     "ssh_timeout": "5m",
-
     "ami_virtualization_type": "hvm",
     "ami_description": "Consul Server",
     "ami_name": "se-consul-{{ user `consul_version` }}-RHEL7.3-{{isotime \"2006-01-02-1504\"}}",
@@ -64,8 +63,9 @@
       "echo \"Install Stage\"",
       "curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /tmp/consul_install https://raw.githubusercontent.com/hashicorp-scripts/consul/master/install-consul/shell/consul.sh",
       "/usr/bin/sudo chmod +x /tmp/consul_install",
-      "/usr/bin/sudo env VERSION=0.7.5 /tmp/consul_install",
+      "/usr/bin/sudo env VERSION={{user `consul_version`}} /tmp/consul_install",
       "/usr/bin/sudo curl -H 'Authorization: token {{user `github_token`}}' -H 'Accept: application/vnd.github.v3.raw' -o /etc/consul.d/config.json https://raw.githubusercontent.com/hashicorp-scripts/consul/master/config/config.json",
+      "/usr/bin/sudo chown -R consul.consul /etc/consul.d/config.json",
       "/usr/bin/sudo service consul start"
     ]
   },
