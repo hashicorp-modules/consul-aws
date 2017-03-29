@@ -37,12 +37,12 @@
     "tags": {
       "Name": "{{user `environment`}} Consul Server {{ user `consul_version` }}",
       "System": "Consul OSS",
-      "Component": "Consul",
+      "Product": "Consul",
       "Environment": "{{user `environment`}}",
       "Built-By": "{{user `vcsname`}}",
-      "Version": "{{user `vault_version`}}",
+      "Product-Version": "{{user `vault_version`}}",
       "OS": "RHEL",
-      "OSVersion": "6.7"
+      "OS-Version": "6.7"
     }
   }],
   "provisioners": [
