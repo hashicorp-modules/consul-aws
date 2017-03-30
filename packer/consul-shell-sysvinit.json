@@ -78,6 +78,7 @@
       "echo \"Cleanup Stage\"",
       "sudo rm -rf /var/lib/cloud/instances/*",
       "sudo rm -f /root/.ssh/authorized_keys",
+      "sudo rm -rf /opt/consul/data",
       "sudo chown -R consul.consul /opt/consul",
       "sudo chown -R consul.consul /etc/consul.d",
       "sudo chmod 750 /opt/consul",
