@@ -24,10 +24,13 @@ do
  fi
 done < /tmp/instances
 
-chown -R consul.consul /etc/consul.d/
+chmod 750 /etc/consul.d
+chown -R consul.consul /etc/consul.d
 rm -f /tmp/instances
 
 # Clear any old state from the build process
-rm -rf /opt/consul/data/*
+rm -rf /opt/consul/data
 
+chown consul.consul /opt/consul
+chmod 750 /opt/consul
 service consul start
