@@ -29,7 +29,6 @@
     },
     "ssh_username": "ec2-user",
     "ssh_timeout": "5m",
-
     "ami_virtualization_type": "hvm",
     "ami_description": "Consul Server",
     "ami_name": "se-consul-{{ user `consul_version` }}-RHEL6.7-{{isotime \"2006-01-02-1504\"}}",
