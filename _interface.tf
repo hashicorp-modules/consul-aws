@@ -1,62 +1,59 @@
-##
-# INPUTS
-##
-variable "vpc_id" {
-	type = "string"
+# Required variables
+variable "cluster_name" {
+  description = "Auto Scaling Group Cluster Name"
+}
+
+variable "os" {
+  # case sensitive for AMI lookup
+  description = "Operating System to use ie RHEL or Ubuntu"
+}
+
+variable "os_version" {
+  description = "Operating System version to use ie 7.3 (for RHEL) or 16.04 (for Ubuntu)"
+}
+
+variable "ssh_key_name" {
+  description = "Pre-existing AWS key name you will use to access the instance(s)"
 }
 
 variable "subnets" {
-	type = "list"
+  description = "Pre-existing Subnet ID(s) to use"
 }
 
+variable "vpc_id" {
+  description = "Pre-existing VPC ID to use"
+}
+
+# Optional variables
 variable "cluster_size" {
-	default = "3"
+  default     = "3"
+  description = "Number of instances to launch in the cluster"
 }
 
-variable "cluster_name" {
-	default = "consul"
-}
-
-variable "sshkey" {
-  description = "Name of the SSH key used to access system"
-}
-
-variable "OS" {
-  default = "RHEL"
-  description = "Operating System to use. So far only RHEL supported. Ubuntu will be supported soon"
-}
-
-variable "OS-Version" {
-  default = "7.3"
-  description = "Operating System Version. I.E. 7.3 for RHEL or 14.04 for Ubuntu."
-}
-
-variable "Consul-Version" {
-  default = "0.7.5"
-  description = "Vault Product Version"
-}
-
-variable "region" {
-  default = "us-west-1"
-  description = "Region where this consul cluster will live. Used to find out Cluster members"
+variable "consul_version" {
+  default     = "0.8.1"
+  description = "Consul Agent version to use ie 0.8.1"
 }
 
 variable "instance_type" {
-	default = "m4.large"
+  default     = "m4.large"
+  description = "AWS instance type to use eg m4.large"
 }
 
-##
-# OUTPUTS
-##
+variable "region" {
+  default     = "us-west-1"
+  description = "Region to deploy consul cluster ie us-west-1"
+}
+
+# Outputs
 output "asg_id" {
-	value = "${aws_autoscaling_group.consul_server.id}"
-}
-
-output "consul_server_sg" {
-	value = "${aws_security_group.consul_server.id}"
+  value = "${aws_autoscaling_group.consul_server.id}"
 }
 
 output "consul_client_sg" {
-	value = "${aws_security_group.consul_client.id}"
+  value = "${aws_security_group.consul_client.id}"
 }
 
+output "consul_server_sg" {
+  value = "${aws_security_group.consul_server.id}"
+}

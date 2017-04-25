@@ -1,9 +1,8 @@
 module "images-aws" {
-  source = "git@github.com:hashicorp-modules/images-aws.git"
-
-  OS             = "${var.OS}"
-  OS-Version     = "${var.OS-Version}"
-  Consul-Version = "${var.Consul-Version}"
+  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=dan-refactor"
+  os             = "${var.os}"
+  os_version     = "${var.os_version}"
+  consul_version = "${var.consul_version}"
 }
 
 #resource "aws_cloudwatch_log_group" "consul_server" {
@@ -11,7 +10,7 @@ module "images-aws" {
 #}
 
 resource "aws_iam_role" "consul_server" {
-  name               = "ConsulServer"
+  name               = "${var.cluster_name}-ConsulServer"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
@@ -22,7 +21,7 @@ resource "aws_iam_role_policy" "consul_server" {
 }
 
 resource "aws_iam_instance_profile" "consul_server" {
-  name  = "ConsulServer"
+  name  = "${var.cluster_name}-ConsulServer"
   roles = ["${aws_iam_role.consul_server.name}"]
 }
 
@@ -39,7 +38,7 @@ resource "aws_launch_configuration" "consul_server" {
   image_id      = "${module.images-aws.consul_image}"
   instance_type = "${var.instance_type}"
   user_data     = "${data.template_file.init.rendered}"
-  key_name      = "${var.sshkey}"
+  key_name      = "${var.ssh_key_name}"
 
   security_groups = [
     "${aws_security_group.consul_server.id}",
