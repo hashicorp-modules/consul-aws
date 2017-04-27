@@ -1,8 +1,8 @@
 module "images-aws" {
   source         = "git@github.com:hashicorp-modules/images-aws.git?ref=dan-refactor"
+  consul_version = "${var.consul_version}"
   os             = "${var.os}"
   os_version     = "${var.os_version}"
-  consul_version = "${var.consul_version}"
 }
 
 #resource "aws_cloudwatch_log_group" "consul_server" {
@@ -56,15 +56,13 @@ resource "aws_launch_configuration" "consul_server" {
 
 resource "aws_autoscaling_group" "consul_server" {
   launch_configuration = "${aws_launch_configuration.consul_server.id}"
-  vpc_zone_identifier  = ["${var.subnets}"]
-
-  name = "${var.cluster_name} Consul Servers"
-
-  max_size         = "${var.cluster_size}"
-  min_size         = "${var.cluster_size}"
-  desired_capacity = "${var.cluster_size}"
-  default_cooldown = 30
-  force_delete     = true
+  vpc_zone_identifier  = ["${var.subnet_ids}"]
+  name                 = "${var.cluster_name} Consul Servers"
+  max_size             = "${var.cluster_size}"
+  min_size             = "${var.cluster_size}"
+  desired_capacity     = "${var.cluster_size}"
+  default_cooldown     = 30
+  force_delete         = true
 
   tag {
     key                 = "Name"

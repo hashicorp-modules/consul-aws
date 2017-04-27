@@ -16,7 +16,7 @@ variable "ssh_key_name" {
   description = "Pre-existing AWS key name you will use to access the instance(s)"
 }
 
-variable "subnets" {
+variable "subnet_ids" {
   description = "Pre-existing Subnet ID(s) to use"
 }
 
