@@ -17,6 +17,7 @@ variable "ssh_key_name" {
 }
 
 variable "subnet_ids" {
+  type        = "list"
   description = "Pre-existing Subnet ID(s) to use"
 }
 
