@@ -51,10 +51,10 @@ output "asg_id" {
   value = "${aws_autoscaling_group.consul_server.id}"
 }
 
-output "consul_client_sg" {
+output "consul_client_sg_id" {
   value = "${aws_security_group.consul_client.id}"
 }
 
-output "consul_server_sg" {
+output "consul_server_sg_id" {
   value = "${aws_security_group.consul_server.id}"
 }

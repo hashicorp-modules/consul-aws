@@ -1,6 +1,6 @@
 resource "aws_security_group" "consul_server" {
   name        = "consul-server-sg"
-  description = "Security group for Consul Server Instances"
+  description = "Security Group for Consul Server Instances"
   vpc_id      = "${var.vpc_id}"
 
   tags {
@@ -90,8 +90,8 @@ resource "aws_security_group" "consul_server" {
 }
 
 resource "aws_security_group" "consul_client" {
-  name        = "consul-sg"
-  description = "Security group for Consul Agent client instances"
+  name        = "consul-client-sg"
+  description = "Security Group for Consul Client Instances"
   vpc_id      = "${var.vpc_id}"
 
   tags {

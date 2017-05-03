@@ -21,8 +21,8 @@ resource "aws_iam_role_policy" "consul_server" {
 }
 
 resource "aws_iam_instance_profile" "consul_server" {
-  name  = "${var.cluster_name}-ConsulServer"
-  roles = ["${aws_iam_role.consul_server.name}"]
+  name = "${var.cluster_name}-ConsulServer"
+  role = "${aws_iam_role.consul_server.name}"
 }
 
 data "template_file" "init" {
