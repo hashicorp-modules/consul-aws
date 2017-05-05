@@ -29,7 +29,7 @@ data "template_file" "init" {
   template = "${file("${path.module}/init-cluster.tpl")}"
 
   vars = {
-    region       = "${var.region}"
+    cluster_size = "${var.cluster_size}"
     cluster_name = "${var.cluster_name}"
   }
 }

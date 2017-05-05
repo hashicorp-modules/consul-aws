@@ -37,9 +37,5 @@ data "aws_iam_policy_document" "consul_server" {
     ]
 
     actions = ["s3:*"]
-
-    lifecycle {
-      prevent_destroy = true
-    }
   }
 }
