@@ -26,16 +26,4 @@ data "aws_iam_policy_document" "consul_server" {
       "ec2:DescribeTags",
     ]
   }
-
-  statement {
-    sid    = "AllowConsulBackups"
-    effect = "Allow"
-
-    resources = [
-      "${aws_s3_bucket.consul_backup_bucket.arn}",
-      "${aws_s3_bucket.consul_backup_bucket.arn}/*",
-    ]
-
-    actions = ["s3:*"]
-  }
 }

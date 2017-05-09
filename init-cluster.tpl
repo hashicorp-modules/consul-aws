@@ -7,10 +7,10 @@ new_hostname="consul-$${instance_id}"
 hostnamectl set-hostname "$${new_hostname}"
 
 # add the cluster name to the config with jq
-jq ".retry_join_ec2 += {\"tag_key\": \"Cluster-Name\", \"tag_value\": \"${cluster_name}\"}" < consul-default.json > /tmp/consul-default.tmp
+jq ".retry_join_ec2 += {\"tag_key\": \"Cluster-Name\", \"tag_value\": \"${cluster_name}\"}" < /etc/consul.d/consul-default.json > /tmp/consul-default.tmp
 
 # add the cluster instance count to the config with jq
-jq ".bootstrap_expect = 3" < consul-server.json > /tmp/consul-server.tmp
+jq ".bootstrap_expect = ${cluster_size}" < /etc/consul.d/consul-server.json > /tmp/consul-server.tmp
 
 # cp rather than mv to maintain owner and permissions on files
 cp /tmp/consul-default.tmp /etc/consul.d/consul-default.json

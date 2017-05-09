@@ -58,7 +58,3 @@ output "consul_client_sg_id" {
 output "consul_server_sg_id" {
   value = "${aws_security_group.consul_server.id}"
 }
-
-output "consul_backup_bucket" {
-  value = "${aws_s3_bucket.consul_backup_bucket.id}"
-}
