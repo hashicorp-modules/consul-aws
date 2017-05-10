@@ -68,7 +68,7 @@ variable "ssh_key_name" {
 }
 
 module "network-aws" {
-  source           = "git@github.com:hashicorp-modules/network-aws.git?ref=dan-refactor"
+  source           = "git@github.com:hashicorp-modules/network-aws.git"
   environment_name = "${var.environment_name}"
   os               = "${var.os}"
   os_version       = "${var.os_version}"
@@ -76,7 +76,7 @@ module "network-aws" {
 }
 
 module "consul-aws" {
-  source       = "git@github.com:hashicorp-modules/consul-aws.git?ref=dan-refactor"
+  source       = "git@github.com:hashicorp-modules/consul-aws.git"
   cluster_name = "${var.environment_name}-consul-asg"
   os           = "${var.os}"
   os_version   = "${var.os_version}"
