@@ -31,8 +31,13 @@ variable "cluster_size" {
   description = "Number of instances to launch in the cluster"
 }
 
+variable "consul_retry_join_ec2" {
+  default     = "consul-aws"
+  description = "The tag Consul uses to auto-join instances as a cluster"
+}
+
 variable "consul_version" {
-  default     = "0.8.1"
+  default     = "0.8.3"
   description = "Consul Agent version to use ie 0.8.1"
 }
 

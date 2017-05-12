@@ -29,8 +29,8 @@ data "template_file" "init" {
   template = "${file("${path.module}/init-cluster.tpl")}"
 
   vars = {
-    cluster_size = "${var.cluster_size}"
-    cluster_name = "${var.cluster_name}"
+    cluster_size          = "${var.cluster_size}"
+    consul_retry_join_ec2 = "${var.consul_retry_join_ec2}"
   }
 }
 
@@ -73,6 +73,12 @@ resource "aws_autoscaling_group" "consul_server" {
   tag {
     key                 = "Cluster-Name"
     value               = "${var.cluster_name}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "consul_retry_join_ec2"
+    value               = "${var.consul_retry_join_ec2}"
     propagate_at_launch = true
   }
 }
