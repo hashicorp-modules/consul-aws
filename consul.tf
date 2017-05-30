@@ -3,7 +3,7 @@ terraform {
 }
 
 module "images-aws" {
-  source         = "git@github.com:hashicorp-modules/images-aws.git"
+  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-05-26"
   consul_version = "${var.consul_version}"
   os             = "${var.os}"
   os_version     = "${var.os_version}"
@@ -29,8 +29,8 @@ data "template_file" "init" {
   template = "${file("${path.module}/init-cluster.tpl")}"
 
   vars = {
-    cluster_size          = "${var.cluster_size}"
-    consul_retry_join_ec2 = "${var.consul_retry_join_ec2}"
+    cluster_size     = "${var.cluster_size}"
+    environment_name = "${var.environment_name}"
   }
 }
 
@@ -77,8 +77,8 @@ resource "aws_autoscaling_group" "consul_server" {
   }
 
   tag {
-    key                 = "consul_retry_join_ec2"
-    value               = "${var.consul_retry_join_ec2}"
+    key                 = "Environment-Name"
+    value               = "${var.environment_name}"
     propagate_at_launch = true
   }
 }

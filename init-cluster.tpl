@@ -7,14 +7,12 @@ new_hostname="consul-$${instance_id}"
 hostnamectl set-hostname "$${new_hostname}"
 
 # add the consul group to the config with jq
-jq ".retry_join_ec2 += {\"tag_key\": \"consul_retry_join_ec2\", \"tag_value\": \"${consul_retry_join_ec2}\"}" < /etc/consul.d/consul-default.json > /tmp/consul-default.tmp
+jq ".retry_join_ec2 += {\"tag_key\": \"Environment-Name\", \"tag_value\": \"${environment_name}\"}" < /etc/consul.d/consul-default.json.example > /etc/consul.d/consul-default.json
+chown consul:consul /etc/consul.d/consul-default.json
 
 # add the cluster instance count to the config with jq
-jq ".bootstrap_expect = ${cluster_size}" < /etc/consul.d/consul-server.json > /tmp/consul-server.tmp
-
-# cp rather than mv to maintain owner and permissions on files
-cp /tmp/consul-default.tmp /etc/consul.d/consul-default.json
-cp /tmp/consul-server.tmp /etc/consul.d/consul-server.json
+jq ".bootstrap_expect = ${cluster_size}" < /etc/consul.d/consul-server.json.example > /etc/consul.d/consul-server.json
+chown consul:consul /etc/consul.d/consul-server.json
 
 systemctl enable consul
 systemctl start consul

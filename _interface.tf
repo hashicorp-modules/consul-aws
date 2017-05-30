@@ -3,6 +3,10 @@ variable "cluster_name" {
   description = "Auto Scaling Group Cluster Name"
 }
 
+variable "environment_name" {
+  description = "Environment Name (tagged to all instances)"
+}
+
 variable "os" {
   # case sensitive for AMI lookup
   description = "Operating System to use ie RHEL or Ubuntu"
@@ -29,11 +33,6 @@ variable "vpc_id" {
 variable "cluster_size" {
   default     = "3"
   description = "Number of instances to launch in the cluster"
-}
-
-variable "consul_retry_join_ec2" {
-  default     = "consul-aws"
-  description = "The tag Consul uses to auto-join instances as a cluster"
 }
 
 variable "consul_version" {
