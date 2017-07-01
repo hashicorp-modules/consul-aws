@@ -39,7 +39,7 @@ You can pass Terraform variables during `terraform apply` or in a
 
 ## Images
 
-- [consul-server.json Packer template](https://github.com/hashicorp-modules/packer-templates/blob/master/consul/consul-server.json)
+- [consul.json Packer template](https://github.com/hashicorp-modules/packer-templates/blob/master/consul/consul.json)
 
 ## Usage
 
