@@ -36,8 +36,8 @@ variable "cluster_size" {
 }
 
 variable "consul_version" {
-  default     = "0.8.3"
-  description = "Consul Agent version to use ie 0.8.1"
+  default     = "0.8.4"
+  description = "Consul version to use ie 0.8.4"
 }
 
 variable "instance_type" {
