@@ -13,6 +13,11 @@ rm -rf /opt/consul/data/*
 # set the hostname (before starting consul)
 hostnamectl set-hostname "$${new_hostname}"
 
+# seeing failed nodes listed  in consul members with their solo config
+# try a 2 min sleep to see if it helps with all instances wiping data
+# in a similar time window
+sleep 120
+
 # add the consul group to the config with jq
 jq ".retry_join_ec2 += {\"tag_key\": \"Environment-Name\", \"tag_value\": \"${environment_name}\"}" < /etc/consul.d/consul-default.json > /tmp/consul-default.json.tmp
 sed -i -e "s/127.0.0.1/$${local_ipv4}/" /tmp/consul-default.json.tmp

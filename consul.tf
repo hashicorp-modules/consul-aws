@@ -3,14 +3,14 @@ terraform {
 }
 
 module "images-aws" {
-  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-05-26"
+  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-07-03"
   consul_version = "${var.consul_version}"
   os             = "${var.os}"
   os_version     = "${var.os_version}"
 }
 
 resource "aws_iam_role" "consul_server" {
-  name               = "${var.cluster_name}-ConsulServer"
+  name               = "${var.cluster_name}-Consul-Server"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
@@ -21,7 +21,7 @@ resource "aws_iam_role_policy" "consul_server" {
 }
 
 resource "aws_iam_instance_profile" "consul_server" {
-  name = "${var.cluster_name}-ConsulServer"
+  name = "${var.cluster_name}-Consul-Server"
   role = "${aws_iam_role.consul_server.name}"
 }
 
