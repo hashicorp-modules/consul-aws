@@ -3,7 +3,7 @@ terraform {
 }
 
 module "images-aws" {
-  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-10-10"
+  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-08-10"
   consul_version = "${var.consul_version}"
   os             = "${var.os}"
   os_version     = "${var.os_version}"
