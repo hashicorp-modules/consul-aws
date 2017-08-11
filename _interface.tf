@@ -3,6 +3,10 @@ variable "cluster_name" {
   description = "Auto Scaling Group Cluster Name"
 }
 
+variable "consul_version" {
+  description = "Consul version to use eg 0.8.4 or 0.8.4+ent"
+}
+
 variable "environment_name" {
   description = "Environment Name (tagged to all instances)"
 }
@@ -35,9 +39,9 @@ variable "cluster_size" {
   description = "Number of instances to launch in the cluster"
 }
 
-variable "consul_version" {
-  default     = "0.8.4"
-  description = "Consul version to use ie 0.8.4"
+variable "environment" {
+  default     = "production"
+  description = "Environment eg development, stage or production"
 }
 
 variable "instance_type" {

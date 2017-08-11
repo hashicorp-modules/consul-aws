@@ -19,5 +19,5 @@ subnet_ids = ["subnet-0ab1cd2e"]
 # Pre-existing VPC ID to use
 vpc_id = "vpc-123abc45"
 
-# Consul version to use ie 0.8.4
+# Consul version to use eg 0.8.4 or 0.8.4+ent
 consul_version = "0.8.4"
