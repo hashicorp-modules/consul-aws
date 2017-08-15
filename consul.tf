@@ -2,11 +2,48 @@ terraform {
   required_version = ">= 0.9.3"
 }
 
-module "images-aws" {
-  source         = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-08-10"
-  consul_version = "${var.consul_version}"
-  os             = "${var.os}"
-  os_version     = "${var.os_version}"
+provider "aws" {
+  region = "${var.region}"
+}
+
+data "aws_ami" "consul" {
+  most_recent = true
+  owners      = ["362381645759"] # hc-se-demos Hashicorp Demos New Account
+
+  filter {
+    name   = "tag:System"
+    values = ["Consul"]
+  }
+
+  filter {
+    name   = "tag:Environment"
+    values = ["${var.environment}"]
+  }
+
+  filter {
+    name   = "tag:Product-Version"
+    values = ["${var.consul_version}"]
+  }
+
+  filter {
+    name   = "tag:OS"
+    values = ["${var.os}"]
+  }
+
+  filter {
+    name   = "tag:OS-Version"
+    values = ["${var.os_version}"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 resource "aws_iam_role" "consul_server" {
@@ -35,19 +72,18 @@ data "template_file" "init" {
 }
 
 resource "aws_launch_configuration" "consul_server" {
-  image_id      = "${module.images-aws.consul_image}"
-  instance_type = "${var.instance_type}"
-  user_data     = "${data.template_file.init.rendered}"
-  key_name      = "${var.ssh_key_name}"
+  associate_public_ip_address = false
+  ebs_optimized               = false
+  iam_instance_profile        = "${aws_iam_instance_profile.consul_server.id}"
+  image_id                    = "${data.aws_ami.consul.id}"
+  instance_type               = "${var.instance_type}"
+  user_data                   = "${data.template_file.init.rendered}"
+  key_name                    = "${var.ssh_key_name}"
 
   security_groups = [
     "${aws_security_group.consul_server.id}",
     "${aws_security_group.consul_client.id}",
   ]
-
-  associate_public_ip_address = false
-  ebs_optimized               = false
-  iam_instance_profile        = "${aws_iam_instance_profile.consul_server.id}"
 
   lifecycle {
     create_before_destroy = true
