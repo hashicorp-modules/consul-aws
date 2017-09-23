@@ -1,0 +1,1 @@
+environment = "consul-aws-simple"

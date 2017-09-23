@@ -1,50 +1,50 @@
-# consul-aws
+# AWS Consul Terraform Module
 
-Provisions resources for a Consul auto-scaling group in AWS.
+Creates a standard Consul cluster in AWS that includes:
 
-## Requirements
+- A Consul cluster with one node in each private subnet
 
-This module requires a pre-existing AWS key pair, VPC and subnet be available to
-deploy the auto-scaling group within. It's recommended you combine this module
-with [network-aws](https://github.com/hashicorp-modules/network-aws/) which
-provisions a VPC and a private and public subnet per AZ. See the usage section
-for further guidance.
+This module requires a pre-existing AWS SSH key pair for each bastion host.
 
-Consider using [hashicorp-guides/consul](https://github.com/hashicorp-guides/consul/blob/master/terraform-aws/)
-if you need a fully functioning example.
-
-### Environment Variables
+## Environment Variables
 
 - `AWS_DEFAULT_REGION`
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 
-### Terraform Variables
+## Input Variables
 
-You can pass Terraform variables during `terraform apply` or in a
-`terraform.tfvars` file. For example:
-
-- `cluster_name` = "consul-test"
-- `os` = "RHEL"
-- `os_version` = "7.3"
-- `ssh_key_name` = "test_aws"
-- `subnet_ids` = ["subnet-57392f0f"]
-- `vpc_id` = "vpc-7b28a11f"
+- `environment` - [Required] Environment name.
+- `release_version` - [Optional] Release version tag to use (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1).
+- `consul_version` - [Optional] Consul version tag to use (e.g. 0.9.2 or 0.9.2-ent).
+- `os` - [Optional] Operating System to use (e.g. RHEL or Ubuntu).
+- `os_version` - [Optional] Operating System version to use (e.g. 7.3 for RHEL or 16.04 for Ubuntu).
+- `vpc_id` - [Optional] VPC ID to provision resources in.
+- `vpc_cidr` - [Optional] VPC CIDR block to provision resources in.
+- `subnet_ids` - [Optional] Subnet ID(s) to provision resources in.
+- `ssh_key_name` - [Required] Name of AWS keypair that will be created.
+- `consul_count` - [Optional] Number of Consul nodes to provision across private subnets, defaults to private subnet count.
+- `instance_type` - [Optional] Instance type of the Consul node.
 
 ## Outputs
 
-- `asg_id`
-- `consul_client_sg_id`
-- `consul_server_sg_id`
+- `consul_asg_id` - Consul autoscaling group ID.
+- `consul_sg_id` - Consul security group ID.
 
-## Images
+## Module Dependencies
+
+- [AWS Network Terraform Module](https://github.com/hashicorp-modules/network-aws/)
+- [AWS SSH Keypair Terraform Module](https://github.com/hashicorp-modules/ssh-keypair-aws)
+- [TLS Private Key Terraform Module](https://github.com/hashicorp-modules/tls-private-key)
+
+## Image Dependencies
 
 - [consul.json Packer template](https://github.com/hashicorp-modules/packer-templates/blob/master/consul/consul.json)
 
-## Usage
+## Authors
 
-When combined with [network-aws](https://github.com/hashicorp-modules/network-aws/)
-the `vpc_id` and `subnet_ids` variables are output from that module so you should
-not supply them. Replace the `cluster_name` variable with `environment_name`.
+HashiCorp Solutions Engineering Team.
 
-An example is available in [hashicorp-guides/consul](https://github.com/hashicorp-guides/consul/blob/master/terraform-aws/main.tf).
+## License
+
+Mozilla Public License Version 2.0. See LICENSE for full details.
