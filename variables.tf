@@ -1,5 +1,6 @@
-variable "environment" {
-  description = "Environment name."
+variable "name" {
+  default     = "consul-aws"
+  description = "Name for resources, defaults to \"consul-aws\"."
 }
 
 variable "release_version" {
@@ -35,16 +36,20 @@ variable "subnet_ids" {
   description = "Subnet ID(s) to provision resources in."
 }
 
-variable "ssh_key_name" {
-  description = "AWS key name you will use to access the instance(s)."
-}
-
 variable "consul_count" {
   default     = "0"
   description = "Number of Consul nodes to provision across private subnets, defaults to private subnet count."
 }
 
-variable "instance_type" {
+variable "consul_instance" {
   default     = "t2.small"
   description = "AWS instance type for Consul node (e.g. m4.large)."
+}
+
+variable "instance_profile" {
+  description = "AWS instance profile for Consul Auto-Join."
+}
+
+variable "ssh_key_name" {
+  description = "AWS key name you will use to access the instance(s)."
 }

@@ -44,12 +44,8 @@ output "subnet_private_ids" {
   value = "${module.network_aws.subnet_private_ids}"
 }
 
-output "security_group_egress_id" {
-  value = "${module.network_aws.security_group_egress_public_id}"
-}
-
-output "security_group_bastion_id" {
-  value = "${module.network_aws.security_group_bastion_ssh_id}"
+output "bastion_security_group" {
+  value = "${module.network_aws.bastion_security_group}"
 }
 
 output "bastion_username" {
@@ -60,6 +56,7 @@ output "bastion_ips_public" {
   value = "${module.network_aws.bastion_ips_public}"
 }
 
+/*
 output "private_key_filename" {
   value = "${module.ssh_keypair_aws.private_key_filename}"
 }
@@ -79,3 +76,4 @@ output "public_key_openssh" {
 output "ssh_key_name" {
   value = "${module.ssh_keypair_aws.ssh_key_name}"
 }
+*/

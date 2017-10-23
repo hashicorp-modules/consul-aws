@@ -3,5 +3,5 @@ output "consul_asg_id" {
 }
 
 output "consul_sg_id" {
-  value = "${aws_security_group.consul_server.id}"
+  value = "${module.consul_server_sg.consul_server_sg_id}"
 }

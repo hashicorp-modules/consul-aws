@@ -1,1 +1,1 @@
-environment = "consul-aws-simple"
+name = "consul-aws-simple"
