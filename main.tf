@@ -2,6 +2,13 @@ terraform {
   required_version = ">= 0.9.3"
 }
 
+module "consul_auto_join_instance_role" {
+  source = "../consul-auto-join-instance-role-aws"
+  # source = "git@github.com:hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
+
+  name = "${var.name}"
+}
+
 data "aws_ami" "consul" {
   most_recent = true
   owners      = ["362381645759"] # hc-se-demos Hashicorp Demos Account
@@ -51,8 +58,9 @@ data "template_file" "consul_init" {
   template = "${file("${path.module}/templates/init-systemd.sh.tpl")}"
 
   vars = {
-    name         = "${var.name}"
-    consul_count = "${var.consul_count ? var.consul_count : length(var.subnet_ids)}"
+    name      = "${var.name}"
+    count     = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
+    user_data = "${var.user_data != "" ? var.user_data : "echo No custom user_data"}"
   }
 }
 
@@ -62,7 +70,7 @@ module "consul_server_sg" {
 
   name        = "${var.name}"
   vpc_id      = "${var.vpc_id}"
-  cidr_blocks = ["${var.vpc_cidr}"]
+  cidr_blocks = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Consul ports for public access - DO NOT DO THIS IN PROD
 }
 
 resource "aws_security_group_rule" "ssh" {
@@ -71,15 +79,15 @@ resource "aws_security_group_rule" "ssh" {
   protocol          = "tcp"
   from_port         = 22
   to_port           = 22
-  cidr_blocks       = ["${var.vpc_cidr}"]
+  cidr_blocks       = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
 }
 
 resource "aws_launch_configuration" "consul_server" {
-  associate_public_ip_address = false
+  associate_public_ip_address = "${var.public_ip != "false" ? true : false}"
   ebs_optimized               = false
-  iam_instance_profile        = "${var.instance_profile}"
+  iam_instance_profile        = "${var.instance_profile != "" ? var.instance_profile : module.consul_auto_join_instance_role.instance_profile_id}"
   image_id                    = "${data.aws_ami.consul.id}"
-  instance_type               = "${var.consul_instance}"
+  instance_type               = "${var.instance_type}"
   user_data                   = "${data.template_file.consul_init.rendered}"
   key_name                    = "${var.ssh_key_name}"
 
@@ -96,9 +104,9 @@ resource "aws_autoscaling_group" "consul_server" {
   launch_configuration = "${aws_launch_configuration.consul_server.id}"
   vpc_zone_identifier  = ["${var.subnet_ids}"]
   name                 = "${var.name}-consul-servers"
-  max_size             = "${var.consul_count ? var.consul_count : length(var.subnet_ids)}"
-  min_size             = "${var.consul_count ? var.consul_count : length(var.subnet_ids)}"
-  desired_capacity     = "${var.consul_count ? var.consul_count : length(var.subnet_ids)}"
+  max_size             = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
+  min_size             = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
+  desired_capacity     = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
   default_cooldown     = 30
   force_delete         = true
 

@@ -1,40 +1,38 @@
-resource "random_id" "name" {
-  byte_length = 4
-  prefix      = "${var.name}-"
-}
+data "template_file" "bastion_user_data" {
+  template = "${file("${path.module}/../templates/bastion-init-systemd.sh.tpl")}"
 
-module "ssh_keypair_aws" {
-  source = "../../../ssh-keypair-aws"
-  # source = "git@github.com:hashicorp-modules/ssh-keypair-aws.git?ref=f-refactor"
-
-  ssh_key_name = "${random_id.name.hex}"
-}
-
-module "consul_auto_join_instance_role" {
-  source = "../../../consul-auto-join-instance-role-aws"
-  # source = "git@github.com:hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
-
-  name = "${var.name}"
+  vars = {
+    name = "${var.name}"
+  }
 }
 
 module "network_aws" {
   source = "../../../network-aws"
   # source = "git@github.com:hashicorp-modules/network-aws.git?ref=f-refactor"
 
-  name             = "${var.name}"
-  bastion_connect  = "true"
-  instance_profile = "${module.consul_auto_join_instance_role.instance_profile_id}"
-  ssh_key_name     = "${module.ssh_keypair_aws.ssh_key_name}"
+  name          = "${var.name}"
+  nat_count     = "1"
+  bastion_count = "1"
+  user_data     = "${data.template_file.bastion_user_data.rendered}" # Override user_data
+}
+
+data "template_file" "consul_user_data" {
+  template = "${file("${path.module}/../templates/consul-init-systemd.sh.tpl")}"
+
+  vars = {
+    name             = "${var.name}"
+    bootstrap_expect = "${length(module.network_aws.subnet_private_ids)}"
+  }
 }
 
 module "consul_aws" {
   source = "../../../consul-aws"
   # source = "git@github.com:hashicorp-modules/network-aws.git?ref=f-refactor"
 
-  name             = "${var.name}"
-  vpc_id           = "${module.network_aws.vpc_id}"
-  vpc_cidr         = "${module.network_aws.vpc_cidr_block}"
-  subnet_ids       = "${module.network_aws.subnet_private_ids}"
-  instance_profile = "${module.consul_auto_join_instance_role.instance_profile_id}"
-  ssh_key_name     = "${module.ssh_keypair_aws.ssh_key_name}"
+  name         = "${var.name}" # Must match network_aws module name for Consul Auto Join to work
+  vpc_id       = "${module.network_aws.vpc_id}"
+  vpc_cidr     = "${module.network_aws.vpc_cidr_block}"
+  subnet_ids   = "${module.network_aws.subnet_private_ids}"
+  user_data    = "${data.template_file.consul_user_data.rendered}" # Custom user_data
+  ssh_key_name = "${module.network_aws.ssh_key_name}"
 }
