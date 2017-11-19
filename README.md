@@ -58,7 +58,7 @@ These are recommended modules you can use to populate required input variables f
 
 ## Image Dependencies
 
-- [consul.json Packer template](https://github.com/hashicorp-modules/packer-templates/blob/master/consul/consul.json)
+- [consul.json Packer template](https://github.com/hashicorp/guides-configuration/blob/master/consul/consul.json)
 
 ## Authors
 

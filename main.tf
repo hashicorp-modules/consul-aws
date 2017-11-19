@@ -3,8 +3,7 @@ terraform {
 }
 
 module "consul_auto_join_instance_role" {
-  source = "../consul-auto-join-instance-role-aws"
-  # source = "git@github.com:hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
+  source = "git@github.com:hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
 
   name = "${var.name}"
 }
@@ -65,10 +64,9 @@ data "template_file" "consul_init" {
 }
 
 module "consul_server_sg" {
-  source = "../consul-server-ports-aws"
-  # source = "git@github.com:hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
+  source = "git@github.com:hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
 
-  name        = "${var.name}"
+  name        = "${var.name}-consul-server"
   vpc_id      = "${var.vpc_id}"
   cidr_blocks = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Consul ports for public access - DO NOT DO THIS IN PROD
 }
