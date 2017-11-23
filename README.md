@@ -28,6 +28,7 @@ Consider using [hashicorp-guides/consul](https://github.com/hashicorp-guides/con
 - `subnet_ids`: [Optional] Subnet ID(s) to provision resources in.
 - `count`: [Optional] Number of Consul nodes to provision across private subnets, defaults to private subnet count.
 - `public_ip`: [Optional] Associate a public IP address to the Consul nodes, defaults to "false".
+- `image_id`: [Optional] AMI to use, defaults to the HashiStack AMI.
 - `instance_profile`: [Optional] AWS instance profile to use, defaults to consul-auto-join-instance-role module.
 - `instance_type`: [Optional] AWS instance type for Consul node (e.g. "m4.large"), defaults to "t2.small".
 - `user_data`: [Optional] user_data script to pass in at runtime.
