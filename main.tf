@@ -59,7 +59,7 @@ data "template_file" "consul_init" {
   vars = {
     name      = "${var.name}"
     count     = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
-    user_data = "${var.user_data != "" ? var.user_data : "echo No custom user_data"}"
+    user_data = "${var.user_data != "" ? var.user_data : "echo 'No custom user_data'"}"
   }
 }
 

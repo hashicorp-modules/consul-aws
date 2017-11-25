@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "---Begin default init---"
+echo "[---Begin init-systemd.sh---]"
 
 echo "Set variables"
 instance_id="$(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
@@ -21,8 +21,8 @@ else
   echo "OS detection failure"
 fi
 
-echo "---Default init complete---"
+echo "[---init-systemd.sh complete---]"
 
-echo "---Begin custom init---"
+echo "[---Begin custom init---]"
 ${user_data}
-echo "---Custom init complete---"
+echo "[---Custom init complete---]"
