@@ -119,4 +119,16 @@ resource "aws_autoscaling_group" "consul_server" {
     value               = "${var.name}"
     propagate_at_launch = true
   }
+
+  tag {
+    key                 = "owner"
+    value               = "${var.owner}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "TTL"
+    value               = "${var.ttl}"
+    propagate_at_launch = true
+  }
 }

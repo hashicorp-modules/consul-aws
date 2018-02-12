@@ -78,3 +78,13 @@ variable "users" {
 
   description = "Map of SSH users."
 }
+
+variable "owner" {
+  default     = "consul-aws"
+  description = "Tags the EC2 instances with an owner, defaults to \"consul-aws\"."
+}
+
+variable "ttl" {
+  default     = "1"
+  description = "Tags the EC2 instances with a time to live, defaults to 1 hour."
+}

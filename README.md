@@ -34,6 +34,8 @@ Consider using [hashicorp-guides/consul](https://github.com/hashicorp-guides/con
 - `user_data`: [Optional] user_data script to pass in at runtime.
 - `ssh_key_name`: [Required] Name of AWS keypair that will be created.
 - `user`: [Optional] Map of SSH users.
+- `owner`: [Optional] Tags the EC2 instances with an owner, defaults to "consul-aws".
+- `ttl`: [Optional] Tags the EC2 instances with a time to live, defaults to 1 hour.
 
 ## Outputs
 
