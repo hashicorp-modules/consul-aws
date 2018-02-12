@@ -8,7 +8,7 @@ Creates a standard Consul cluster in AWS that includes:
 
 This module requires a pre-existing AWS key pair, VPC, and subnet be available to deploy the auto-scaling group within. See [Recommended Modules](#recommended-modules) to easily provision these resources and populate required variables.
 
-Consider using [hashicorp-guides/consul](https://github.com/hashicorp-guides/consul/blob/master/terraform-aws/) or checkout [examples](./examples) for fully functioning examples.
+Checkout [examples](./examples) for fully functioning examples.
 
 ## Environment Variables
 
