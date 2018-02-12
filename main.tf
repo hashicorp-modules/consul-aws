@@ -80,7 +80,7 @@ resource "aws_security_group_rule" "ssh" {
   cidr_blocks       = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
 }
 
-resource "aws_launch_configuration" "consul_server" {
+resource "aws_launch_configuration" "consul" {
   associate_public_ip_address = "${var.public_ip != "false" ? true : false}"
   ebs_optimized               = false
   iam_instance_profile        = "${var.instance_profile != "" ? var.instance_profile : element(module.consul_auto_join_instance_role.instance_profile_id, 0)}"
@@ -98,10 +98,10 @@ resource "aws_launch_configuration" "consul_server" {
   }
 }
 
-resource "aws_autoscaling_group" "consul_server" {
-  launch_configuration = "${aws_launch_configuration.consul_server.id}"
+resource "aws_autoscaling_group" "consul" {
+  launch_configuration = "${aws_launch_configuration.consul.id}"
   vpc_zone_identifier  = ["${var.subnet_ids}"]
-  name                 = "${var.name}-consul-servers"
+  name                 = "${var.name}-consul"
   max_size             = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
   min_size             = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
   desired_capacity     = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
@@ -110,7 +110,7 @@ resource "aws_autoscaling_group" "consul_server" {
 
   tag {
     key                 = "Name"
-    value               = "${format("%s-consul-server", var.name)}"
+    value               = "${format("%s-consul-node", var.name)}"
     propagate_at_launch = true
   }
 

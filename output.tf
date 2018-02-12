@@ -1,5 +1,5 @@
 output "consul_asg_id" {
-  value = "${aws_autoscaling_group.consul_server.id}"
+  value = "${aws_autoscaling_group.consul.id}"
 }
 
 output "consul_sg_id" {
