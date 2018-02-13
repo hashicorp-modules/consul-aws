@@ -3,8 +3,8 @@
 echo "[---Begin init-systemd.sh---]"
 
 echo "Set variables"
-instance_id="$(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
-hostname=${name}-consul-$${instance_id}
+INSTANCE_ID="$(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
+HOSTNAME=${name}-consul-$INSTANCE_ID
 
 echo "Set hostname"
 
@@ -12,11 +12,11 @@ YUM=$(which yum 2>/dev/null)
 APT_GET=$(which apt-get 2>/dev/null)
 
 if [[ ! -z $${YUM} ]]; then
-  hostnamectl set-hostname "$${hostname}"
+  hostnamectl set-hostname "$HOSTNAME"
 elif [[ ! -z $${APT_GET} ]]; then
-  sudo hostname $${hostname}
-  sudo sed -i '2i127.0.1.1 $${hostname}' /etc/hosts
-  echo '$${hostname}' | sudo tee /etc/hostname
+  sudo hostname $HOSTNAME
+  sudo sed -i "2i127.0.1.1 $HOSTNAME" /etc/hosts
+  echo $HOSTNAME | sudo tee /etc/hostname
 else
   echo "OS detection failure"
 fi
