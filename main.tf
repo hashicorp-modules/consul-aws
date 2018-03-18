@@ -11,6 +11,7 @@ module "consul_auto_join_instance_role" {
 data "aws_ami" "consul" {
   most_recent = true
   owners      = ["self"]
+  name_regex  = "consul-image_${lower(var.release_version)}_consul_${var.consul_version}_${lower(var.os)}_${var.os_version}.*"
 
   filter {
     name   = "tag:System"
@@ -24,7 +25,7 @@ data "aws_ami" "consul" {
 
   filter {
     name   = "tag:Release-Version"
-    values = ["${var.release_version}"]
+    values = ["${lower(var.release_version)}"]
   }
 
   filter {
