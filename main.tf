@@ -3,12 +3,15 @@ terraform {
 }
 
 module "consul_auto_join_instance_role" {
-  source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
+  # source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
+  source = "../consul-auto-join-instance-role-aws"
 
-  name = "${var.name}"
+  create = "${var.create ? 1 : 0}"
+  name   = "${var.name}"
 }
 
 data "aws_ami" "consul" {
+  count       = "${var.create ? 1 : 0}"
   most_recent = true
   owners      = ["self"]
   name_regex  = "consul-image_${lower(var.release_version)}_consul_${lower(var.consul_version)}_${lower(var.os)}_${var.os_version}.*"
@@ -55,6 +58,7 @@ data "aws_ami" "consul" {
 }
 
 data "template_file" "consul_init" {
+  count    = "${var.create ? 1 : 0}"
   template = "${file("${path.module}/templates/init-systemd.sh.tpl")}"
 
   vars = {
@@ -65,15 +69,19 @@ data "template_file" "consul_init" {
 }
 
 module "consul_server_sg" {
-  source = "github.com/hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
+  # source = "github.com/hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
+  source = "../consul-server-ports-aws"
 
+  create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-consul-server"
   vpc_id      = "${var.vpc_id}"
   cidr_blocks = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Consul ports for public access - DO NOT DO THIS IN PROD
 }
 
 resource "aws_security_group_rule" "ssh" {
-  security_group_id = "${element(module.consul_server_sg.consul_server_sg_id, 0)}"
+  count = "${var.create ? 1 : 0}"
+
+  security_group_id = "${module.consul_server_sg.consul_server_sg_id}"
   type              = "ingress"
   protocol          = "tcp"
   from_port         = 22
@@ -82,17 +90,19 @@ resource "aws_security_group_rule" "ssh" {
 }
 
 resource "aws_launch_configuration" "consul" {
+  count = "${var.create ? 1 : 0}"
+
   name_prefix                 = "${format("%s-consul-lc-", var.name)}"
   associate_public_ip_address = "${var.public_ip != "false" ? true : false}"
   ebs_optimized               = false
-  iam_instance_profile        = "${var.instance_profile != "" ? var.instance_profile : element(module.consul_auto_join_instance_role.instance_profile_id, 0)}"
+  iam_instance_profile        = "${var.instance_profile != "" ? var.instance_profile : module.consul_auto_join_instance_role.instance_profile_id}"
   image_id                    = "${var.image_id != "" ? var.image_id : data.aws_ami.consul.id}"
   instance_type               = "${var.instance_type}"
   user_data                   = "${data.template_file.consul_init.rendered}"
   key_name                    = "${var.ssh_key_name}"
 
   security_groups = [
-    "${element(module.consul_server_sg.consul_server_sg_id, 0)}",
+    "${module.consul_server_sg.consul_server_sg_id}",
   ]
 
   lifecycle {
@@ -101,6 +111,8 @@ resource "aws_launch_configuration" "consul" {
 }
 
 resource "aws_autoscaling_group" "consul" {
+  count = "${var.create ? 1 : 0}"
+
   name_prefix          = "${format("%s-consul-asg-", var.name)}"
   launch_configuration = "${aws_launch_configuration.consul.id}"
   vpc_zone_identifier  = ["${var.subnet_ids}"]

@@ -1,5 +1,5 @@
 output "consul_asg_id" {
-  value = "${aws_autoscaling_group.consul.id}"
+  value = "${element(concat(aws_autoscaling_group.consul.*.id, list("")), 0)}" # TODO: Workaround for issue #11210
 }
 
 output "consul_sg_id" {

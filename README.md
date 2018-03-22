@@ -18,6 +18,7 @@ Checkout [examples](./examples) for fully functioning examples.
 
 ## Input Variables
 
+- `create`: [Optional] Create Module, defaults to true.
 - `name`: [Optional] Name for resources, defaults to "consul-aws".
 - `release_version`: [Optional] Release version tag to use (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1), defaults to "0.1.0-dev1".
 - `consul_version`: [Optional] Consul version tag to use (e.g. 0.9.2 or 0.9.2-ent), defaults to "0.9.2".
