@@ -3,8 +3,7 @@ terraform {
 }
 
 module "consul_auto_join_instance_role" {
-  # source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
-  source = "../consul-auto-join-instance-role-aws"
+  source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
 
   create = "${var.create ? 1 : 0}"
   name   = "${var.name}"
@@ -69,8 +68,7 @@ data "template_file" "consul_init" {
 }
 
 module "consul_server_sg" {
-  # source = "github.com/hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
-  source = "../consul-server-ports-aws"
+  source = "github.com/hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
 
   create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-consul-server"
