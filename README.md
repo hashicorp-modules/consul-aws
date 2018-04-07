@@ -21,26 +21,37 @@ Checkout [examples](./examples) for fully functioning examples.
 - `create`: [Optional] Create Module, defaults to true.
 - `name`: [Optional] Name for resources, defaults to "consul-aws".
 - `release_version`: [Optional] Release version tag to use (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1), defaults to "0.1.0-dev1".
-- `consul_version`: [Optional] Consul version tag to use (e.g. 0.9.2 or 0.9.2-ent), defaults to "0.9.2".
+- `consul_version`: [Optional] Consul version tag to use (e.g. 1.0.6 or 1.0.6-ent), defaults to "1.0.6".
 - `os`: [Optional] Operating System to use (e.g. RHEL or Ubuntu), defaults to "RHEL".
 - `os_version`: [Optional] Operating System version to use (e.g. 7.3 for RHEL or 16.04 for Ubuntu), defaults to "7.3".
 - `vpc_id`: [Required] VPC ID to provision resources in.
 - `vpc_cidr`: [Optional] VPC CIDR block to provision resources in.
 - `subnet_ids`: [Optional] Subnet ID(s) to provision resources in.
+- `public`: [Optional] Open up nodes to the public internet for easy access - DO NOT DO THIS IN PROD, defaults to false.
 - `count`: [Optional] Number of Consul nodes to provision across private subnets, defaults to private subnet count.
-- `public_ip`: [Optional] Associate a public IP address to the Consul nodes, defaults to "false".
+- `instance_type`: [Optional] AWS instance type for Consul node (e.g. "m4.large"), defaults to "t2.small".
 - `image_id`: [Optional] AMI to use, defaults to the HashiStack AMI.
 - `instance_profile`: [Optional] AWS instance profile to use, defaults to consul-auto-join-instance-role module.
-- `instance_type`: [Optional] AWS instance type for Consul node (e.g. "m4.large"), defaults to "t2.small".
 - `user_data`: [Optional] user_data script to pass in at runtime.
 - `ssh_key_name`: [Required] Name of AWS keypair that will be created.
-- `user`: [Optional] Map of SSH users.
+- `use_lb_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
+- `lb_cert`: [Optional] Certificate for LB IAM server certificate.
+- `lb_private_key`: [Optional] Private key for LB IAM server certificate.
+- `lb_ssl_policy`: [Optional] SSL policy for LB, defaults to "ELBSecurityPolicy-2016-08".
+- `target_groups`: [Optional] List of target group ARNs to apply to the autoscaling group..
+- `users`: [Optional] Map of SSH users.
 - `tags`: [Optional] Optional list of tag maps to set on resources, defaults to empty list.
+- `tags_list`: [Optional] Optional map of tags to set on resources, defaults to empty map.
 
 ## Outputs
 
-- `consul_asg_id`: Consul autoscaling group ID.
+- `zREADME`: README for module.
 - `consul_sg_id`: Consul security group ID.
+- `consul_lb_sg_id`: Consul load balancer security group ID.
+- `consul_tg_http_8500_arn`: Consul load balancer HTTP 8500 target group.
+- `consul_tg_https_8500_arn`: Consul load balancer HTTPS 8500 target group.
+- `consul_lb_dns`: Consul load balancer DNS name.
+- `consul_asg_id`: Consul autoscaling group ID.
 - `consul_username`: The Consul host username.
 
 ## Submodules
@@ -55,7 +66,7 @@ These are recommended modules you can use to populate required input variables f
 - [AWS SSH Keypair Terraform Module](https://github.com/hashicorp-modules/ssh-keypair-aws)
   - `ssh_key_name` --> `ssh_key_name`
 - [AWS Network Terraform Module](https://github.com/hashicorp-modules/network-aws/)
-  - `vpc_cidr_block` --> `vpc_cidr`
+  - `vpc_cidr` --> `vpc_cidr`
   - `vpc_id` --> `vpc_id`
   - `subnet_private_ids` --> `subnet_ids`
 

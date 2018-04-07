@@ -1,5 +1,13 @@
 terraform {
-  required_version = ">= 0.9.3"
+  required_version = ">= 0.11.5"
+}
+
+provider "aws" {
+  version = "~> 1.12"
+}
+
+provider "template" {
+  version = "~> 1.0"
 }
 
 module "consul_auto_join_instance_role" {
@@ -10,7 +18,7 @@ module "consul_auto_join_instance_role" {
 }
 
 data "aws_ami" "consul" {
-  count       = "${var.create ? 1 : 0}"
+  count       = "${var.create && var.image_id == "" ? 1 : 0}"
   most_recent = true
   owners      = ["self"]
   name_regex  = "consul-image_${lower(var.release_version)}_consul_${lower(var.consul_version)}_${lower(var.os)}_${var.os_version}.*"
@@ -62,7 +70,6 @@ data "template_file" "consul_init" {
 
   vars = {
     name      = "${var.name}"
-    count     = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
     user_data = "${var.user_data != "" ? var.user_data : "echo 'No custom user_data'"}"
   }
 }
@@ -73,7 +80,8 @@ module "consul_server_sg" {
   create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-consul-server"
   vpc_id      = "${var.vpc_id}"
-  cidr_blocks = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Consul ports for public access - DO NOT DO THIS IN PROD
+  cidr_blocks = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Consul ports for public access - DO NOT DO THIS IN PROD
+  tags        = "${var.tags}"
 }
 
 resource "aws_security_group_rule" "ssh" {
@@ -84,18 +92,18 @@ resource "aws_security_group_rule" "ssh" {
   protocol          = "tcp"
   from_port         = 22
   to_port           = 22
-  cidr_blocks       = ["${var.public_ip != "false" ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+  cidr_blocks       = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
 }
 
 resource "aws_launch_configuration" "consul" {
   count = "${var.create ? 1 : 0}"
 
   name_prefix                 = "${format("%s-consul-", var.name)}"
-  associate_public_ip_address = "${var.public_ip != "false" ? true : false}"
+  associate_public_ip_address = "${var.public}"
   ebs_optimized               = false
-  iam_instance_profile        = "${var.instance_profile != "" ? var.instance_profile : module.consul_auto_join_instance_role.instance_profile_id}"
-  image_id                    = "${var.image_id != "" ? var.image_id : data.aws_ami.consul.id}"
   instance_type               = "${var.instance_type}"
+  image_id                    = "${var.image_id != "" ? var.image_id : element(concat(data.aws_ami.consul.*.id, list("")), 0)}" # TODO: Workaround for issue #11210
+  iam_instance_profile        = "${var.instance_profile != "" ? var.instance_profile : module.consul_auto_join_instance_role.instance_profile_id}"
   user_data                   = "${data.template_file.consul_init.rendered}"
   key_name                    = "${var.ssh_key_name}"
 
@@ -108,23 +116,47 @@ resource "aws_launch_configuration" "consul" {
   }
 }
 
+module "consul_lb_aws" {
+  source = "github.com/hashicorp-modules/consul-lb-aws?ref=f-refactor"
+
+  create         = "${var.create}"
+  name           = "${var.name}"
+  vpc_id         = "${var.vpc_id}"
+  cidr_blocks    = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+  subnet_ids     = ["${var.subnet_ids}"]
+  is_internal_lb = "${!var.public}"
+  use_lb_cert    = "${var.use_lb_cert}"
+  lb_cert        = "${var.lb_cert}"
+  lb_private_key = "${var.lb_private_key}"
+  lb_ssl_policy  = "${var.lb_ssl_policy}"
+  tags           = "${var.tags}"
+}
+
 resource "aws_autoscaling_group" "consul" {
   count = "${var.create ? 1 : 0}"
 
   name_prefix          = "${format("%s-consul-", var.name)}"
   launch_configuration = "${aws_launch_configuration.consul.id}"
   vpc_zone_identifier  = ["${var.subnet_ids}"]
-  max_size             = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
-  min_size             = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
-  desired_capacity     = "${var.count != "-1" ? var.count : length(var.subnet_ids)}"
+  max_size             = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
+  min_size             = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
+  desired_capacity     = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
   default_cooldown     = 30
   force_delete         = true
+
+  target_group_arns = ["${compact(concat(
+    list(
+      module.consul_lb_aws.consul_tg_http_8500_arn,
+      module.consul_lb_aws.consul_tg_https_8500_arn,
+    ),
+    var.target_groups
+  ))}"]
 
   tags = ["${concat(
     list(
       map("key", "Name", "value", format("%s-consul-node", var.name), "propagate_at_launch", true),
       map("key", "Consul-Auto-Join", "value", var.name, "propagate_at_launch", true)
     ),
-    var.tags
+    var.tags_list
   )}"]
 }
