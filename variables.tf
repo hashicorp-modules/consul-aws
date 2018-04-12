@@ -90,9 +90,29 @@ variable "lb_private_key" {
   default     = ""
 }
 
+variable "lb_cert_chain" {
+  description = "Certificate chain for LB IAM server certificate."
+  default     = ""
+}
+
 variable "lb_ssl_policy" {
   description = "SSL policy for LB, defaults to \"ELBSecurityPolicy-2016-08\"."
   default     = "ELBSecurityPolicy-2016-08"
+}
+
+variable "lb_logs_bucket" {
+  description = "S3 bucket for LB access logs."
+  default     = ""
+}
+
+variable "lb_logs_prefix" {
+  description = "S3 bucket prefix for LB access logs."
+  default     = ""
+}
+
+variable "lb_logs_enabled" {
+  description = "S3 bucket LB access logs enabled."
+  default     = false
 }
 
 variable "target_groups" {

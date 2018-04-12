@@ -37,7 +37,11 @@ Checkout [examples](./examples) for fully functioning examples.
 - `use_lb_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
 - `lb_cert`: [Optional] Certificate for LB IAM server certificate.
 - `lb_private_key`: [Optional] Private key for LB IAM server certificate.
+- `lb_cert_chain`: [Optional] Certificate chain for LB IAM server certificate.
 - `lb_ssl_policy`: [Optional] SSL policy for LB, defaults to "ELBSecurityPolicy-2016-08".
+- `lb_logs_bucket`: [Optional] S3 bucket for LB access logs.
+- `lb_logs_prefix`: [Optional] S3 bucket prefix for LB access logs.
+- `lb_logs_enabled`: [Optional] S3 bucket LB access logs enabled.
 - `target_groups`: [Optional] List of target group ARNs to apply to the autoscaling group..
 - `users`: [Optional] Map of SSH users.
 - `tags`: [Optional] Optional list of tag maps to set on resources, defaults to empty list.
@@ -49,7 +53,7 @@ Checkout [examples](./examples) for fully functioning examples.
 - `consul_sg_id`: Consul security group ID.
 - `consul_lb_sg_id`: Consul load balancer security group ID.
 - `consul_tg_http_8500_arn`: Consul load balancer HTTP 8500 target group.
-- `consul_tg_https_8500_arn`: Consul load balancer HTTPS 8500 target group.
+- `consul_tg_https_8080_arn`: Consul load balancer HTTPS 8080 target group.
 - `consul_lb_dns`: Consul load balancer DNS name.
 - `consul_asg_id`: Consul autoscaling group ID.
 - `consul_username`: The Consul host username.
