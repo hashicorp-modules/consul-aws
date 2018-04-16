@@ -7,7 +7,9 @@ output "zREADME" {
 You can now interact with Consul using any of the CLI
 (https://www.consul.io/docs/commands/index.html) or
 API (https://www.consul.io/api/index.html) commands.
-${var.public ? format("\nView the Consul UI: %s\n\nThe Consul nodes are in a public subnet with UI & SSH access open from the\ninternet. WARNING - DO NOT DO THIS IN PRODUCTION!\n", "${module.consul_lb_aws.consul_lb_dns}") : ""}
+
+${format("Consul UI: %s%s %s\n\n%s", var.use_lb_cert ? "https://" : "http://", module.consul_lb_aws.consul_lb_dns, var.public ? "(Public)" : "(Internal)", var.public ? "The Consul nodes are in a public subnet with UI & SSH access open from the\ninternet. WARNING - DO NOT DO THIS IN PRODUCTION!" : "The Consul node(s) are in a private subnet, UI access can only be achieved inside\nthe network through a VPN.")}
+
 Use the CLI to retrieve the Consul members, write a key/value, and read
 that key/value.
 
@@ -30,10 +32,10 @@ the below env var has been set for you.
   $ curl \\
       -X PUT \\
       -d '{\"bar=baz\"}' \\
-      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Write a key/value
+      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Write a KV
   $ curl \\
       -X GET \\
-      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Read a key/value"
+      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Read a KV"
 :
 "If you're making HTTPS API requests to Consul from the Bastion host,
 the below env vars have been set for you.
@@ -51,11 +53,11 @@ the below env vars have been set for you.
       -X PUT \\
       -d '{\"bar=baz\"}' \\
       -k --cacert $${CONSUL_CACERT} --cert $${CONSUL_CLIENT_CERT} --key $${CONSUL_CLIENT_KEY} \\
-      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Write a key value
+      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Write a KV
   $ curl \\
       -X GET \\
       -k --cacert $${CONSUL_CACERT} --cert $${CONSUL_CLIENT_CERT} --key $${CONSUL_CLIENT_KEY} \\
-      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Read a key value"
+      $${CONSUL_ADDR}/v1/kv/api | jq '.' # Read a KV"
 }
 README
 }

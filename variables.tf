@@ -100,19 +100,24 @@ variable "lb_ssl_policy" {
   default     = "ELBSecurityPolicy-2016-08"
 }
 
-variable "lb_logs_bucket" {
-  description = "S3 bucket for LB access logs."
+variable "lb_bucket" {
+  description = "S3 bucket override for LB access logs, `lb_bucket_override` be set to true if overriding"
   default     = ""
 }
 
-variable "lb_logs_prefix" {
+variable "lb_bucket_override" {
+  description = "Override the default S3 bucket created for access logs with `lb_bucket`, defaults to false."
+  default     = false
+}
+
+variable "lb_bucket_prefix" {
   description = "S3 bucket prefix for LB access logs."
   default     = ""
 }
 
 variable "lb_logs_enabled" {
-  description = "S3 bucket LB access logs enabled."
-  default     = false
+  description = "S3 bucket LB access logs enabled, defaults to true."
+  default     = true
 }
 
 variable "target_groups" {

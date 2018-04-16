@@ -117,23 +117,25 @@ resource "aws_launch_configuration" "consul" {
 }
 
 module "consul_lb_aws" {
-  source = "github.com/hashicorp-modules/consul-lb-aws?ref=f-refactor"
+  # source = "github.com/hashicorp-modules/consul-lb-aws?ref=f-refactor"
+  source = "../consul-lb-aws"
 
-  create          = "${var.create}"
-  name            = "${var.name}"
-  vpc_id          = "${var.vpc_id}"
-  cidr_blocks     = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
-  subnet_ids      = ["${var.subnet_ids}"]
-  is_internal_lb  = "${!var.public}"
-  use_lb_cert     = "${var.use_lb_cert}"
-  lb_cert         = "${var.lb_cert}"
-  lb_private_key  = "${var.lb_private_key}"
-  lb_cert_chain   = "${var.lb_cert_chain}"
-  lb_ssl_policy   = "${var.lb_ssl_policy}"
-  lb_logs_bucket  = "${var.lb_logs_bucket}"
-  lb_logs_prefix  = "${var.lb_logs_prefix}"
-  lb_logs_enabled = "${var.lb_logs_enabled}"
-  tags            = "${var.tags}"
+  create             = "${var.create}"
+  name               = "${var.name}"
+  vpc_id             = "${var.vpc_id}"
+  cidr_blocks        = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+  subnet_ids         = ["${var.subnet_ids}"]
+  is_internal_lb     = "${!var.public}"
+  use_lb_cert        = "${var.use_lb_cert}"
+  lb_cert            = "${var.lb_cert}"
+  lb_private_key     = "${var.lb_private_key}"
+  lb_cert_chain      = "${var.lb_cert_chain}"
+  lb_ssl_policy      = "${var.lb_ssl_policy}"
+  lb_bucket          = "${var.lb_bucket}"
+  lb_bucket_override = "${var.lb_bucket_override}"
+  lb_bucket_prefix   = "${var.lb_bucket_prefix}"
+  lb_logs_enabled    = "${var.lb_logs_enabled}"
+  tags               = "${var.tags}"
 }
 
 resource "aws_autoscaling_group" "consul" {
