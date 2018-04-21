@@ -10,7 +10,7 @@ variable "name" {
 
 variable "release_version" {
   description = "Release version tag (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1), defaults to \"0.1.0-dev1\""
-  default     = "0.1.0-dev1"
+  default     = "0.1.0"
 }
 
 variable "consul_version" {
