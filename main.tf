@@ -11,7 +11,7 @@ provider "template" {
 }
 
 module "consul_auto_join_instance_role" {
-  source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws?ref=f-refactor"
+  source = "github.com/hashicorp-modules/consul-auto-join-instance-role-aws"
 
   create = "${var.create ? 1 : 0}"
   name   = "${var.name}"
@@ -75,7 +75,7 @@ data "template_file" "consul_init" {
 }
 
 module "consul_server_sg" {
-  source = "github.com/hashicorp-modules/consul-server-ports-aws?ref=f-refactor"
+  source = "github.com/hashicorp-modules/consul-server-ports-aws"
 
   create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-consul-server"
@@ -117,7 +117,7 @@ resource "aws_launch_configuration" "consul" {
 }
 
 module "consul_lb_aws" {
-  source = "github.com/hashicorp-modules/consul-lb-aws?ref=f-refactor"
+  source = "github.com/hashicorp-modules/consul-lb-aws"
 
   create             = "${var.create}"
   name               = "${var.name}"
