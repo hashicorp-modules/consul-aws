@@ -31,7 +31,7 @@ the below env var has been set for you.
       $${CONSUL_ADDR}/v1/agent/members | jq '.' # Retrieve Consul members
   $ curl \\
       -X PUT \\
-      -d '{\"bar=baz\"}' \\
+      -d 'bar=baz' \\
       $${CONSUL_ADDR}/v1/kv/api | jq '.' # Write a KV
   $ curl \\
       -X GET \\
@@ -51,7 +51,7 @@ the below env vars have been set for you.
       $${CONSUL_ADDR}/v1/agent/members | jq '.' # Retrieve Consul members
   $ curl \\
       -X PUT \\
-      -d '{\"bar=baz\"}' \\
+      -d 'bar=baz' \\
       -k --cacert $${CONSUL_CACERT} --cert $${CONSUL_CLIENT_CERT} --key $${CONSUL_CLIENT_KEY} \\
       $${CONSUL_ADDR}/v1/kv/api | jq '.' # Write a KV
   $ curl \\
