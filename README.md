@@ -31,7 +31,7 @@ Checkout [examples](./examples) for fully functioning examples.
 - `count`: [Optional] Number of Consul nodes to provision across private subnets, defaults to private subnet count.
 - `instance_type`: [Optional] AWS instance type for Consul node (e.g. "m4.large"), defaults to "t2.small".
 - `image_id`: [Optional] AMI to use, defaults to the HashiStack AMI.
-- `volume_type`: [Optional] The root volume type for Vault node (e.g. \"standard", \"gp2"), defaults to "standard".
+- `volume_type`: [Optional] The root volume type for Vault node (e.g. "standard", "gp2"), defaults to "standard".
 - `volume_size`: [Optional] The size of the volume in gigabytes, defaults to "10".
 - `volume_delete_on_termination`: [Optional] Whether the volume should be desroyed on instance termination, defaults to "true".
 - `instance_profile`: [Optional] AWS instance profile to use, defaults to consul-auto-join-instance-role module.
