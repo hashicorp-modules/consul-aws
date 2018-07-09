@@ -61,6 +61,21 @@ variable "image_id" {
   default     = ""
 }
 
+variable "volume_type" {
+  description = "The root volume type for Vault node (e.g. \"standard\", \"gp2\"), defaults to \"standard\"."
+  default = "standard"
+}
+
+variable "volume_size" {
+  description = "The size of the volume in gigabytes, defaults to \"10\"."
+  default = "10"
+}
+
+variable "volume_delete_on_termination" {
+  description = "Whether the volume should be desroyed on instance termination, defaults to \"true\"."
+  default = "true"
+}
+
 variable "instance_profile" {
   description = "AWS instance profile to use, defaults to consul-auto-join-instance-role module."
   default     = ""
