@@ -8,7 +8,7 @@ You can now interact with Consul using any of the CLI
 (https://www.consul.io/docs/commands/index.html) or
 API (https://www.consul.io/api/index.html) commands.
 
-${format("Consul UI: %s %s\n\n%s", module.consul_lb_aws.consul_lb_dns, var.public ? "(Public)" : "(Internal)", var.public ? "The Consul nodes are in a public subnet with UI & SSH access open from the\ninternet. WARNING - DO NOT DO THIS IN PRODUCTION!" : "The Consul node(s) are in a private subnet, UI access can only be achieved inside\nthe network through a VPN.")}
+${format("Consul UI: %s %s\n\n%s", module.consul_lb_aws.consul_app_lb_dns, !var.lb_internal ? "(Public)" : "(Internal)", !var.lb_internal ? "The Consul nodes are in a public subnet with UI & SSH access open from the\ninternet. WARNING - DO NOT DO THIS IN PRODUCTION!" : "The Consul node(s) are in a private subnet, UI access can only be achieved inside\nthe network.")}
 
 Use the CLI to retrieve the Consul members, write a key/value, and read
 that key/value.
@@ -20,7 +20,7 @@ that key/value.
 Use the HTTP API to retrieve the Consul members, write a key/value,
 and read that key/value.
 
-${!var.use_lb_cert ?
+${!var.lb_use_cert ?
 "If you're making HTTP API requests to Consul from the Bastion host,
 the below env var has been set for you.
 
@@ -62,28 +62,56 @@ the below env vars have been set for you.
 README
 }
 
+output "consul_asg_id" {
+  value = "${element(concat(aws_autoscaling_group.consul.*.id, list("")), 0)}" # TODO: Workaround for issue #11210
+}
+
 output "consul_sg_id" {
   value = "${module.consul_server_sg.consul_server_sg_id}"
 }
 
-output "consul_lb_sg_id" {
-  value = "${module.consul_lb_aws.consul_lb_sg_id}"
+output "consul_app_lb_sg_id" {
+  value = "${module.consul_lb_aws.consul_app_lb_sg_id}"
+}
+
+output "consul_lb_arn" {
+  value = "${module.consul_lb_aws.consul_lb_arn}"
+}
+
+output "consul_app_lb_dns" {
+  value = "${module.consul_lb_aws.consul_app_lb_dns}"
+}
+
+output "consul_network_lb_dns" {
+  value = "${module.consul_lb_aws.consul_network_lb_dns}"
+}
+
+output "consul_tg_tcp_22_arn" {
+  value = "${module.consul_lb_aws.consul_tg_tcp_22_arn}"
+}
+
+output "consul_tg_tcp_8500_arn" {
+  value = "${module.consul_lb_aws.consul_tg_tcp_8500_arn}"
 }
 
 output "consul_tg_http_8500_arn" {
   value = "${module.consul_lb_aws.consul_tg_http_8500_arn}"
 }
 
+output "consul_tg_tcp_8080_arn" {
+  value = "${module.consul_lb_aws.consul_tg_tcp_8080_arn}"
+}
+
 output "consul_tg_https_8080_arn" {
   value = "${module.consul_lb_aws.consul_tg_https_8080_arn}"
 }
 
-output "consul_lb_dns" {
-  value = "${module.consul_lb_aws.consul_lb_dns}"
+output "consul_tg_http_3030_arn" {
+  value = "${module.consul_lb_aws.consul_tg_http_3030_arn}"
 }
 
-output "consul_asg_id" {
-  value = "${element(concat(aws_autoscaling_group.consul.*.id, list("")), 0)}" # TODO: Workaround for issue #11210
+output "consul_tg_https_3030_arn" {
+  value = "${module.consul_lb_aws.consul_tg_https_3030_arn}"
 }
 
 output "consul_username" {

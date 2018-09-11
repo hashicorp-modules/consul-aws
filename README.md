@@ -27,15 +27,15 @@ Checkout [examples](./examples) for fully functioning examples.
 - `vpc_id`: [Required] VPC ID to provision resources in.
 - `vpc_cidr`: [Optional] VPC CIDR block to provision resources in.
 - `subnet_ids`: [Optional] Subnet ID(s) to provision resources in.
-- `cidr_blocks`: [Optional] List of CIDR blocks to set on resources, defaults to "vpc_cidr".
-- `public`: [Optional] Make hosts public, set optional "cidr_blocks" variable to open outside of the "vpc_cidr" - DO NOT DO THIS IN PROD, defaults to false.
 - `count`: [Optional] Number of Consul nodes to provision across private subnets, defaults to private subnet count.
 - `instance_type`: [Optional] AWS instance type for Consul node (e.g. "m4.large"), defaults to "t2.small".
 - `image_id`: [Optional] AMI to use, defaults to the HashiStack AMI.
 - `instance_profile`: [Optional] AWS instance profile to use, defaults to consul-auto-join-instance-role module.
 - `user_data`: [Optional] user_data script to pass in at runtime.
 - `ssh_key_name`: [Required] Name of AWS keypair that will be created.
-- `use_lb_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
+- `lb_cidr_blocks`: [Optional] List of CIDR blocks to set on LB, defaults to "vpc_cidr".
+- `lb_internal`: [Optional] Creates an internal load balancer, defaults to true.
+- `lb_use_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
 - `lb_cert`: [Optional] Certificate for LB IAM server certificate.
 - `lb_private_key`: [Optional] Private key for LB IAM server certificate.
 - `lb_cert_chain`: [Optional] Certificate chain for LB IAM server certificate.
@@ -52,12 +52,19 @@ Checkout [examples](./examples) for fully functioning examples.
 ## Outputs
 
 - `zREADME`: README for module.
-- `consul_sg_id`: Consul security group ID.
-- `consul_lb_sg_id`: Consul load balancer security group ID.
-- `consul_tg_http_8500_arn`: Consul load balancer HTTP 8500 target group.
-- `consul_tg_https_8080_arn`: Consul load balancer HTTPS 8080 target group.
-- `consul_lb_dns`: Consul load balancer DNS name.
 - `consul_asg_id`: Consul autoscaling group ID.
+- `consul_sg_id`: Consul security group ID.
+- `consul_app_lb_sg_id`: Consul application load balancer security group ID.
+- `consul_lb_arn`: Consul application load balancer ARN.
+- `consul_app_lb_dns`: Consul load balancer DNS name.
+- `consul_network_lb_dns`: Consul load balancer DNS name.
+- `consul_tg_tcp_22_arn`: Consul network load balancer TCP 22 target group.
+- `consul_tg_tcp_8500_arn`: Consul network load balancer TCP 8500 target group.
+- `consul_tg_http_8500_arn`: Consul application load balancer HTTP 8500 target group.
+- `consul_tg_tcp_8080_arn`: Consul network load balancer TCP 8080 target group.
+- `consul_tg_https_8080_arn`: Consul application load balancer HTTPS 8080 target group.
+- `consul_tg_http_3030_arn`: Consul application load balancer HTTP 3030 target group.
+- `consul_tg_https_3030_arn`: Consul application load balancer HTTPS 3030 target group.
 - `consul_username`: The Consul host username.
 
 ## Submodules

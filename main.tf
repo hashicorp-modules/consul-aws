@@ -42,7 +42,7 @@ module "consul_server_sg" {
   create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-consul-server"
   vpc_id      = "${var.vpc_id}"
-  cidr_blocks = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
+  cidr_blocks = ["${var.vpc_cidr}"]
   tags        = "${var.tags}"
 }
 
@@ -54,14 +54,27 @@ resource "aws_security_group_rule" "ssh" {
   protocol          = "tcp"
   from_port         = 22
   to_port           = 22
-  cidr_blocks       = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
+  cidr_blocks       = ["${split(",", length(compact(var.lb_cidr_blocks)) > 0 ? join(",", compact(var.lb_cidr_blocks)) : var.vpc_cidr)}"]
+  description       = "SSH access to Consul node"
+}
+
+resource "aws_security_group_rule" "wetty_tcp" {
+  count = "${var.create ? 1 : 0}"
+
+  security_group_id = "${module.consul_server_sg.consul_server_sg_id}"
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 3030
+  to_port           = 3030
+  cidr_blocks       = ["${split(",", length(compact(var.lb_cidr_blocks)) > 0 ? join(",", compact(var.lb_cidr_blocks)) : var.vpc_cidr)}"]
+  description       = "Wetty inbound TCP traffic to Consul node"
 }
 
 resource "aws_launch_configuration" "consul" {
   count = "${var.create ? 1 : 0}"
 
   name_prefix                 = "${format("%s-consul-", var.name)}"
-  associate_public_ip_address = "${var.public}"
+  associate_public_ip_address = "${!var.lb_internal}"
   ebs_optimized               = false
   instance_type               = "${var.instance_type}"
   image_id                    = "${var.image_id != "" ? var.image_id : element(concat(data.aws_ami.consul.*.id, list("")), 0)}" # TODO: Workaround for issue #11210
@@ -85,10 +98,10 @@ module "consul_lb_aws" {
   create             = "${var.create}"
   name               = "${var.name}"
   vpc_id             = "${var.vpc_id}"
-  cidr_blocks        = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
+  cidr_blocks        = ["${split(",", length(compact(var.lb_cidr_blocks)) > 0 ? join(",", compact(var.lb_cidr_blocks)) : var.vpc_cidr)}"]
   subnet_ids         = ["${var.subnet_ids}"]
-  is_internal_lb     = "${!var.public}"
-  use_lb_cert        = "${var.use_lb_cert}"
+  lb_internal        = "${var.lb_internal}"
+  lb_use_cert        = "${var.lb_use_cert}"
   lb_cert            = "${var.lb_cert}"
   lb_private_key     = "${var.lb_private_key}"
   lb_cert_chain      = "${var.lb_cert_chain}"
@@ -114,8 +127,13 @@ resource "aws_autoscaling_group" "consul" {
 
   target_group_arns = ["${compact(concat(
     list(
+      module.consul_lb_aws.consul_tg_tcp_22_arn,
+      module.consul_lb_aws.consul_tg_tcp_8500_arn,
       module.consul_lb_aws.consul_tg_http_8500_arn,
+      module.consul_lb_aws.consul_tg_http_3030_arn,
+      module.consul_lb_aws.consul_tg_tcp_8080_arn,
       module.consul_lb_aws.consul_tg_https_8080_arn,
+      module.consul_lb_aws.consul_tg_https_3030_arn,
     ),
     var.target_groups
   ))}"]
