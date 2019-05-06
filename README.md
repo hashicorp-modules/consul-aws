@@ -37,6 +37,7 @@ Checkout [examples](./examples) for fully functioning examples.
 - `ssh_key_name`: [Required] Name of AWS keypair that will be created.
 - `use_lb_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
 - `lb_cert`: [Optional] Certificate for LB IAM server certificate.
+- `lb_inbound_cidrs`: [Optional] List of CIDRs to accept inbound connections into the loadbalancer 
 - `lb_private_key`: [Optional] Private key for LB IAM server certificate.
 - `lb_cert_chain`: [Optional] Certificate chain for LB IAM server certificate.
 - `lb_ssl_policy`: [Optional] SSL policy for LB, defaults to "ELBSecurityPolicy-2016-08".
