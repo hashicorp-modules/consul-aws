@@ -105,6 +105,12 @@ variable "lb_ssl_policy" {
   default     = "ELBSecurityPolicy-2016-08"
 }
 
+variable "lb_inbound_cidrs" {
+  description = "The inbound CIDRS to allow traffic to the load balancer"
+  type = "list"
+  default = []
+}
+
 variable "lb_bucket" {
   description = "S3 bucket override for LB access logs, `lb_bucket_override` be set to true if overriding"
   default     = ""
