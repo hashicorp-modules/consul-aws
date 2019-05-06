@@ -84,7 +84,8 @@ module "consul_lb_aws" {
   create             = "${var.create}"
   name               = "${var.name}"
   vpc_id             = "${var.vpc_id}"
-  cidr_blocks        = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+  cidr_blocks        = ["${split(",", var.public ? join(",", list("0.0.0.0/0") ) : join(",", concat(list(var.vpc_cidr), var.lb_inbound_cidrs ) ) )}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+
   subnet_ids         = ["${var.subnet_ids}"]
   is_internal_lb     = "${!var.public}"
   use_lb_cert        = "${var.use_lb_cert}"
