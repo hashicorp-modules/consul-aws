@@ -3,7 +3,7 @@ terraform {
 }
 
 module "consul_auto_join_instance_role" {
-  source = "github.com/cassidy1/terraform-aws-consul-auto-join-role"
+  source = "github.com/hashicorp-modules/terraform-aws-consul-auto-join-role"
 
   create = var.create ? true : false
   name   = var.name
@@ -37,7 +37,7 @@ data "template_file" "consul_init" {
 }
 
 module "consul_server_sg" {
-  source = "github.com/cassidy1/terraform-aws-consul-server-ports"
+  source = "github.com/hashicorp-modules/terraform-aws-consul-server-ports"
 
   create      = var.create ? true : false
   name        = "${var.name}-consul-server"
@@ -79,7 +79,7 @@ resource "aws_launch_configuration" "consul" {
 }
 
 module "consul_lb_aws" {
-  source = "github.com/cassidy1/terraform-aws-consul-lb"
+  source = "github.com/hashicorp-modules/terraform-aws-consul-lb"
 
   create             = var.create
   name               = var.name
